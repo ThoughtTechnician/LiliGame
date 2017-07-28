@@ -185,12 +185,17 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 if (rx + 800 < getWidth()) {
                     px = (px + 0 * delta);
                     rx = (int) (rx + px * delta / m);
-                    moved = true;
+                    if (px != 0) {
+                        moved = true;
+                    }
                 }
                 if (ry + 600 < getHeight()) {
                     py = (py + 9.8 * delta);
                     ry = (int) (ry + py * delta / m);
-                    moved = true;
+                    if (py != 0) {
+                        moved = true;
+
+                    }
                 }
 
                 if (firstRun || moved) {
@@ -214,8 +219,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     }
                     surfaceHolder.unlockCanvasAndPost(canvas);
                     firstRun = false;
-                } else {
-                    Log.d(TAG, "Not changed!");
+                    Log.d(TAG, "Changed!");
                 }
                 moved = false;
 
