@@ -110,7 +110,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 float deltaY = (event.getY() - dragStartY);
 
                 setRxy((int) (startRx + deltaX), (int) (startRy + deltaY));
-//                setPxy(0,0);
+                setPxy(0,0);
                 result = true;
             }
         } else if (event.getAction() == MotionEvent.ACTION_UP){
@@ -215,9 +215,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                         }
                     }
                 }
-
-
-
 
                 if (moved) {
                     canvas = surfaceHolder.lockCanvas();
