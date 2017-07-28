@@ -35,7 +35,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private double px = 0;
     private double py = 0;
     private boolean moved = false;
-    private boolean onGround = false;
+    private boolean firstRun = true;
 
     private enum TouchStates {
         DRAGGING,
@@ -87,7 +87,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     && event.getY() >= ry
                     && event.getY() <= (ry + 600)) {
                 touchState = TouchStates.DRAGGING;
-                onGround = false;
                 dragStartX = event.getX();
                 dragStartY = event.getY();
                 startRx = rx;
@@ -179,30 +178,22 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             double m = 1.0;
 
             while (running) {
-
-
-                int oldX = rx;
-                int oldY = ry;
-
                 double delta = (System.currentTimeMillis() - time) / 50d;
                 time = System.currentTimeMillis();
 
                 // Gravity Calculations
-                px = (px + 0 * delta);
-                py = (py + 9.8 * delta);
-
-                rx = (int) (rx + px * delta / m);
-                ry = (int) (ry + py * delta / m);
-
-                if (oldX != rx
-                        || oldY != ry) {
+                if (rx + 800 < getWidth()) {
+                    px = (px + 0 * delta);
+                    rx = (int) (rx + px * delta / m);
                     moved = true;
-                    Log.d(TAG, "Gravity Moved it!");
-                    Log.d(TAG, oldX + " -> " + rx);
-                    Log.d(TAG, oldY + " -> " + ry);
+                }
+                if (ry + 600 < getHeight()) {
+                    py = (py + 9.8 * delta);
+                    ry = (int) (ry + py * delta / m);
+                    moved = true;
                 }
 
-                if (moved) {
+                if (firstRun || moved) {
                     canvas = surfaceHolder.lockCanvas();
                     if (canvas == null)
                         continue;
@@ -215,7 +206,6 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                     if (ry + 600 > canvas.getHeight()) {
                         ry = canvas.getHeight() - 600;
                         py = 0;
-                        onGround = true;
                     }
                     synchronized (surfaceHolder) {
                         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), paint);
@@ -223,6 +213,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                         liliDrawable.draw(canvas);
                     }
                     surfaceHolder.unlockCanvasAndPost(canvas);
+                    firstRun = false;
                 } else {
                     Log.d(TAG, "Not changed!");
                 }
