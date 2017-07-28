@@ -34,8 +34,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
     private int ry = 0;
     private double px = 0;
     private double py = 0;
-    private boolean moved = false;
-    private boolean firstRun = true;
+    private boolean moved = true;
 
     private enum TouchStates {
         DRAGGING,
@@ -57,20 +56,32 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
         init();
     }
 
-    private void setRx(int rx) {
-        moved = true;
-        this.rx = rx;
-    }
-    private void setRy(int ry) {
-        moved = true;
-        this.ry = ry;
-    }
+    /**
+     * Set the position of Lili
+     * @param rx new x-coordinate
+     * @param ry new y-coordinate
+     */
     private void setRxy(int rx, int ry) {
         moved = true;
-        this.rx = rx;
-        this.ry = ry;
+        if (rx + 800 > getWidth()) {
+            this.rx = getWidth() - 800;
+        } else if (rx < 0){
+            this.rx = 0;
+        } else {
+            this.rx = rx;
+        }
+        if (ry + 600 > getHeight()) {
+            this.ry = getHeight() - 600;
+        } else if (ry < 0) {
+            this.ry = 0;
+        } else {
+            this.ry = ry;
+        }
     }
-
+    private void setPxy(int px, int py) {
+        this.px = px;
+        this.py = py;
+    }
     private void init() {
         surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
@@ -99,9 +110,8 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 float deltaY = (event.getY() - dragStartY);
 
                 setRxy((int) (startRx + deltaX), (int) (startRy + deltaY));
-
-                px = 0;
-                py = 0;
+//                setPxy(0,0);
+                result = true;
             }
         } else if (event.getAction() == MotionEvent.ACTION_UP){
             touchState = TouchStates.IDLE;
@@ -181,47 +191,51 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                 double delta = (System.currentTimeMillis() - time) / 50d;
                 time = System.currentTimeMillis();
 
-                // Gravity Calculations
-                if (rx + 800 < getWidth()) {
-                    px = (px + 0 * delta);
-                    rx = (int) (rx + px * delta / m);
-                    if (px != 0) {
-                        moved = true;
+                // If Lili is not being dragged around
+                if (touchState != TouchStates.DRAGGING) {
+                    // Momentum Calculations
+                    if (rx + 800 < getWidth()) {
+                        px = (px + 0 * delta);
+                        rx = (int) (rx + px * delta / m);
+                        if (rx + 800 > getWidth()) {
+                            rx = getWidth() - 800;
+                        }
+                        if (px != 0) {
+                            moved = true;
+                        }
+                    }
+                    if (ry + 600 < getHeight()) {
+                        py = (py + 9.8 * delta);
+                        ry = (int) (ry + py * delta / m);
+                        if (ry + 600 > getHeight()) {
+                            ry = getHeight() - 600;
+                        }
+                        if (py != 0) {
+                            moved = true;
+                        }
                     }
                 }
-                if (ry + 600 < getHeight()) {
-                    py = (py + 9.8 * delta);
-                    ry = (int) (ry + py * delta / m);
-                    if (py != 0) {
-                        moved = true;
 
-                    }
-                }
 
-                if (firstRun || moved) {
+
+
+                if (moved) {
                     canvas = surfaceHolder.lockCanvas();
-                    if (canvas == null)
-                        continue;
+                    if (canvas == null) {
+//                        continue;
+                        Log.d(TAG, "Canvas is null!");
+                        System.exit(-1);
+                    }
 
-                    //do drawing
-                    if (rx + 800 > canvas.getWidth()) {
-                        rx = canvas.getWidth() - 800;
-                        px = 0;
-                    }
-                    if (ry + 600 > canvas.getHeight()) {
-                        ry = canvas.getHeight() - 600;
-                        py = 0;
-                    }
                     synchronized (surfaceHolder) {
                         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), paint);
                         liliDrawable.setBounds(rx, ry, (800 + rx), (600 + ry));
                         liliDrawable.draw(canvas);
                     }
                     surfaceHolder.unlockCanvasAndPost(canvas);
-                    firstRun = false;
-                    Log.d(TAG, "Changed!");
+//                    Log.d(TAG, "Changed!");
+                    moved = false;
                 }
-                moved = false;
 
             }
 
