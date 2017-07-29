@@ -10,14 +10,14 @@ public class GameActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.lili_layout);
-
-        ImageView liliView = (ImageView) findViewById(R.id.imageView);
-        liliView.setBackgroundResource(R.drawable.running_animation);
-
-
-        AnimationDrawable frameAnimation = (AnimationDrawable) liliView.getBackground();
-
-        frameAnimation.start();
+        setContentView(R.layout.activity_game);
+//
+//        ImageView liliView = (ImageView) findViewById(R.id.imageView);
+//        liliView.setBackgroundResource(R.drawable.running_animation);
+//
+//
+//        AnimationDrawable frameAnimation = (AnimationDrawable) liliView.getBackground();
+//
+//        frameAnimation.start();
     }
 }

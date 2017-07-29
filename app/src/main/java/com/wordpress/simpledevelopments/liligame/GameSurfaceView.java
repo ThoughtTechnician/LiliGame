@@ -5,6 +5,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.ContextCompat;
@@ -187,6 +188,10 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
             long time = System.currentTimeMillis();
             double m = 1.0;
 
+            AnimationDrawable liliAnimation = (AnimationDrawable) ContextCompat.getDrawable(getContext(), R.drawable.running_animation);
+            liliAnimation.setBounds(800, 0, 800 + 400, 300);
+            liliAnimation.start();
+
             while (running) {
                 double delta = (System.currentTimeMillis() - time) / 50d;
                 time = System.currentTimeMillis();
@@ -228,6 +233,7 @@ public class GameSurfaceView extends SurfaceView implements SurfaceHolder.Callba
                         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), paint);
                         liliDrawable.setBounds(rx, ry, (800 + rx), (600 + ry));
                         liliDrawable.draw(canvas);
+                        liliAnimation.draw(canvas);
                     }
                     surfaceHolder.unlockCanvasAndPost(canvas);
 //                    Log.d(TAG, "Changed!");
